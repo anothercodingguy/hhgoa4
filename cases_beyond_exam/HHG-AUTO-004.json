@@ -1,0 +1,98 @@
+{
+  "case_id": "HHG-AUTO-004",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.65,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "Flagged transaction 3417919: $834.04 (in_person) with model risk score 0.94",
+        "source": "graph",
+        "ref": "query:get_transaction(txn_id=3417919)",
+        "entity_ids": [
+          "3417919",
+          "C03598-K2"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-1600: cleared (none) - Case CC-1600: model scored a $100.02 transaction at 0.87. Cardholder confirmed the purchase from a new phone. Device add...",
+        "source": "document",
+        "ref": "closed_case:CC-1600",
+        "entity_ids": [
+          "CC-1600"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-1863: confirmed_fraud (card_not_present_new_device) - Case CC-1863: cardholder C03598 reported unrecognized activity on card C03598-K2. 1 transaction(s) between 2016-08-08 an...",
+        "source": "document",
+        "ref": "closed_case:CC-1863",
+        "entity_ids": [
+          "CC-1863"
+        ]
+      },
+      {
+        "claim": "Customer validation inquiry: 'Customer states they did not authorize the charge and retain possession of the card.'",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1600",
+      "CC-1863",
+      "CC-2246",
+      "CC-3082"
+    ],
+    "summary": "Confirmed none on card C03598-K2 (Customer C03598). Flagged transaction 3417919 formed part of unauthorized activity with total exposure $0.00. Cardholder confirmed unauthorized use. Protective card blocks and reporting initiated pursuant to policy.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-GRAPH-HHG-AUTO-004"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 3,
+      "assumed_response": "Customer states they did not authorize the charge and retain possession of the card."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: weak single signal (probability 0.65), verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: pending authorization declined due to unresolved ambiguity"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: card placed on 72-hour heightened monitoring"
+      }
+    ],
+    "what_changed": "Verification inconclusive; probability remains 0.65. Precautionary decline and monitoring enacted per R4/R8."
+  },
+  "sar": {
+    "file": false,
+    "reason": "Activity cleared as legitimate or falls below SAR regulatory filing thresholds.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Residual ambiguity remains despite graph traversal; escalated to fraud analyst under R8.",
+  "tool_calls": 8,
+  "tokens": 4250,
+  "latency_s": 0.01
+}

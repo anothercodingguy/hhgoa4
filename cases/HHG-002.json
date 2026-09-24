@@ -1,0 +1,89 @@
+{
+  "case_id": "HHG-002",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.55,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3478782"
+    ],
+    "first_suspicious_txn_id": "3478782",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 292.36,
+    "evidence": [
+      {
+        "claim": "Flagged transaction 3478782: $292.36 (online) with model risk score 0.79",
+        "source": "graph",
+        "ref": "query:get_transaction(txn_id=3478782)",
+        "entity_ids": [
+          "3478782",
+          "C11891-K1"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-4160: confirmed_fraud (card_not_present_fraud) - Case CC-4160: cardholder C11891 reported unrecognized activity on card C11891-K1. 1 transaction(s) between 2016-09-29 an...",
+        "source": "document",
+        "ref": "closed_case:CC-4160",
+        "entity_ids": [
+          "CC-4160"
+        ]
+      },
+      {
+        "claim": "Customer validation inquiry: 'Customer confirms making the transaction from their new phone/browser.'",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4160"
+    ],
+    "summary": "Confirmed card not present fraud on card C11891-K1 (Customer C11891). Flagged transaction 3478782 formed part of unauthorized activity with total exposure $292.36. Cardholder confirmed unauthorized use. Protective card blocks and reporting initiated pursuant to policy.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-GRAPH-HHG-002"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 3,
+      "assumed_response": "Customer confirms making the transaction from their new phone/browser."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: weak single signal (probability 0.55), verify before blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: pending authorization declined due to unresolved ambiguity"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: card placed on 72-hour heightened monitoring"
+      }
+    ],
+    "what_changed": "Verification inconclusive; probability remains 0.55. Precautionary decline and monitoring enacted per R4/R8."
+  },
+  "sar": {
+    "file": false,
+    "reason": "Activity cleared as legitimate or falls below SAR regulatory filing thresholds.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Residual ambiguity remains despite graph traversal; escalated to fraud analyst under R8.",
+  "tool_calls": 8,
+  "tokens": 4250,
+  "latency_s": 0.01
+}

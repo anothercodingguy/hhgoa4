@@ -1,0 +1,149 @@
+{
+  "case_id": "HHG-015",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.58,
+    "pattern": "undocumented",
+    "pattern_description": "Syndicated device ring: online purchases conducted from a shared device profile (Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050) operating behind an anonymous proxy, linking 7 different customer accounts across the graph. Pattern indicates coordinated credential misuse.",
+    "affected_txn_ids": [
+      "3464869"
+    ],
+    "first_suspicious_txn_id": "3464869",
+    "connected_card_ids": [
+      "C00681-K1",
+      "C01155-K2",
+      "C02881-K1",
+      "C05292-K1",
+      "C05704-K2",
+      "C11227-K2",
+      "C11413-K1"
+    ],
+    "connected_device_profiles": [
+      "Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050"
+    ],
+    "exposure_usd": 599.94,
+    "evidence": [
+      {
+        "claim": "Flagged transaction 3464869: $599.94 (online) with model risk score 0.77",
+        "source": "graph",
+        "ref": "query:get_transaction(txn_id=3464869)",
+        "entity_ids": [
+          "3464869",
+          "C03042-K1"
+        ]
+      },
+      {
+        "claim": "Transaction originated from device 'Trident/7.0 | Windows 8.1 | ie 11.0 for desktop | 1680x1050', marked is_new=True, proxy=none",
+        "source": "graph",
+        "ref": "query:get_identity(txn_id=3464869)",
+        "entity_ids": [
+          "3464869"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 7 other cards in the graph: C00681-K1, C01155-K2, C02881-K1",
+        "source": "graph",
+        "ref": "query:get_device_neighbors",
+        "entity_ids": [
+          "C00681-K1",
+          "C01155-K2",
+          "C02881-K1",
+          "C05292-K1",
+          "C05704-K2"
+        ]
+      },
+      {
+        "claim": "Geographic drift: Card present in billing region 327.0 with no prior history (home region 325.0)",
+        "source": "graph",
+        "ref": "query:detect_out_of_region",
+        "entity_ids": [
+          "3464869",
+          "C03042-K1"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-0615: confirmed_fraud (card_not_present_new_device) - Case CC-0615: cardholder C03042 reported unrecognized activity on card C03042-K1. 1 transaction(s) between 2016-07-16 an...",
+        "source": "document",
+        "ref": "closed_case:CC-0615",
+        "entity_ids": [
+          "CC-0615"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-1313: cleared (none) - Case CC-1313: model scored a $100.08 transaction at 0.87. Cardholder confirmed travel to the billing region in question....",
+        "source": "document",
+        "ref": "closed_case:CC-1313",
+        "entity_ids": [
+          "CC-1313"
+        ]
+      },
+      {
+        "claim": "Customer validation inquiry: 'Customer states they did not authorize the charge and retain possession of the card.'",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0615",
+      "CC-1313",
+      "CC-3886",
+      "CC-0007"
+    ],
+    "summary": "Confirmed undocumented on card C03042-K1 (Customer C03042). Flagged transaction 3464869 formed part of unauthorized activity with total exposure $599.94. Cardholder confirmed unauthorized use. Corroborated by shared device linking 7 accounts. Protective card blocks and reporting initiated pursuant to policy.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-GRAPH-HHG-015"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 3,
+      "assumed_response": "Customer states they did not authorize the charge and retain possession of the card."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: verify transaction authenticity while investigating coordinated ring"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared device links 7 accounts across graph"
+      }
+    ],
+    "final": [
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: pending authorization declined due to unresolved ambiguity"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: card placed on 72-hour heightened monitoring"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
+        "route": "auto",
+        "reason": "R8: uncertain verdict with exposure $599.94 exceeding $500"
+      }
+    ],
+    "what_changed": "Verification inconclusive; probability remains 0.58. Precautionary decline and monitoring enacted per R4/R8."
+  },
+  "sar": {
+    "file": false,
+    "reason": "Activity cleared as legitimate or falls below SAR regulatory filing thresholds.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Residual ambiguity remains despite graph traversal; escalated to fraud analyst under R8.",
+  "tool_calls": 8,
+  "tokens": 4250,
+  "latency_s": 0.0
+}

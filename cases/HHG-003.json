@@ -1,0 +1,105 @@
+{
+  "case_id": "HHG-003",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.86,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3530164"
+    ],
+    "first_suspicious_txn_id": "3530164",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 49.0,
+    "evidence": [
+      {
+        "claim": "Flagged transaction 3530164: $49.00 (in_person) with model risk score 0.40",
+        "source": "graph",
+        "ref": "query:get_transaction(txn_id=3530164)",
+        "entity_ids": [
+          "3530164",
+          "C08623-K2"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-1589: cleared (none) - Case CC-1589: model scored a $99.91 transaction at 0.94. Cardholder confirmed travel to the billing region in question. ...",
+        "source": "document",
+        "ref": "closed_case:CC-1589",
+        "entity_ids": [
+          "CC-1589"
+        ]
+      },
+      {
+        "claim": "Corroborating case memory CC-2817: confirmed_fraud (out_of_region_use) - Case CC-2817: cardholder C08623 reported unrecognized activity on card C08623-K2. 1 transaction(s) between 2016-08-30 an...",
+        "source": "document",
+        "ref": "closed_case:CC-2817",
+        "entity_ids": [
+          "CC-2817"
+        ]
+      },
+      {
+        "claim": "Customer validation inquiry: 'Customer states they did not make these purchases and still has the card in their possession.'",
+        "source": "customer",
+        "ref": "evidence_request:1",
+        "entity_ids": []
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-1589",
+      "CC-2817",
+      "CC-2935",
+      "CC-3327"
+    ],
+    "summary": "Confirmed card not present fraud on card C08623-K2 (Customer C08623). Flagged transaction 3530164 formed part of unauthorized activity with total exposure $49.00. Cardholder confirmed unauthorized use. Protective card blocks and reporting initiated pursuant to policy.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-GRAPH-HHG-003"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 2,
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: confirm customer dispute and check whether card is still in customer possession"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "Heighten monitoring sensitivity pending verification"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied transaction; exposure $49.00 requires L1 approval"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2: internal case opened and written to graph memory"
+      }
+    ],
+    "what_changed": "Customer validation denial confirmed unauthorized status, raising probability from 0.74 to 0.86. Initial verification escalated to BLOCK_CARD (L1), CREATE_CASE, and monitoring."
+  },
+  "sar": {
+    "file": false,
+    "reason": "Activity cleared as legitimate or falls below SAR regulatory filing thresholds.",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Customer denial settled the verdict; device link identified and connected cards protected. Further steps would not change the actions.",
+  "tool_calls": 8,
+  "tokens": 4250,
+  "latency_s": 0.08
+}
