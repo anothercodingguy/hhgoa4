@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TigerGraph Fraud Workbench | HHGOA 2026</title>
+    <meta name="description" content="Hacker House Goa 2026: Financial Crime Investigation and Next-Best Action Agent powered by TigerGraph Savanna Cloud, GSQL Graph Traversals, and GraphRAG.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="theme-dark">
+    <!-- MAIN APP WRAPPER -->
+    <div class="app-container">
+
+        <!-- 1. TOP GLOBAL OPERATIONS HEADER -->
+        <header class="ops-header">
+            <div class="header-brand-group">
+                <div class="tg-hex-logo">
+                    <svg viewBox="0 0 32 32" width="24" height="24" fill="none">
+                        <polygon points="16,2 29,9.5 29,22.5 16,30 3,22.5 3,9.5" stroke="#f97316" stroke-width="2.2" fill="#1c130c" />
+                        <circle cx="16" cy="16" r="3.5" fill="#f97316" />
+                        <line x1="16" y1="6" x2="16" y2="12.5" stroke="#f97316" stroke-width="1.8" />
+                        <line x1="16" y1="19.5" x2="16" y2="26" stroke="#f97316" stroke-width="1.8" />
+                        <line x1="8" y1="11" x2="13" y2="14" stroke="#f97316" stroke-width="1.8" />
+                        <line x1="19" y1="18" x2="24" y2="21" stroke="#f97316" stroke-width="1.8" />
+                    </svg>
+                </div>
+                <div class="brand-titles">
+                    <div class="brand-main-row">
+                        <span class="brand-tg">TIGERGRAPH</span>
+                        <span class="brand-slash">/</span>
+                        <span class="brand-app">FRAUD WORKBENCH</span>
+                        <span class="badge-goa">HH Goa 2026 · Track 4</span>
+                    </div>
+                    <div class="brand-sub">Transaction Risk & Policy Decision Engine</div>
+                </div>
+            </div>
+
+            <!-- Telemetry Monitor -->
+            <div class="telemetry-bar">
+                <div class="telemetry-item">
+                    <span class="status-dot pulse-emerald"></span>
+                    <span class="telemetry-label">SAVANNA CLOUD:</span>
+                    <span class="telemetry-val">CONNECTED (14ms)</span>
+                </div>
+                <div class="telemetry-divider">|</div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">INDEXED:</span>
+                    <span class="telemetry-val">590,742 TXNS</span>
+                </div>
+                <div class="telemetry-divider">|</div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">HISTORY:</span>
+                    <span class="telemetry-val">5,565 CASES</span>
+                </div>
+                <div class="telemetry-divider">|</div>
+                <div class="telemetry-item">
+                    <span class="telemetry-label">MCP:</span>
+                    <span class="telemetry-val">ACTIVE</span>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <button type="button" id="btn-re-eval" class="btn-action-primary">
+                    <span id="re-eval-icon"></span>
+                    <span>Re-Run Benchmark</span>
+                </button>
+                <a href="https://github.com/tigergraph" target="_blank" rel="noopener noreferrer" class="btn-action-secondary">
+                    GSQL Docs
+                </a>
+            </div>
+        </header>
+
+        <!-- 2. HIGH DENSITY METRICS HUD -->
+        <section class="metrics-hud">
+            <div class="metric-tile">
+                <div class="metric-header">
+                    <span class="metric-title">ALERTS IN SCOPE</span>
+                </div>
+                <div class="metric-val" id="kpi-cases">20</div>
+                <div class="metric-meta">Official Benchmark Set</div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-header">
+                    <span class="metric-title">CONFIRMED FRAUD</span>
+                    <span class="metric-icon-badge danger">●</span>
+                </div>
+                <div class="metric-val val-danger" id="kpi-fraud">--</div>
+                <div class="metric-meta">Syndicates & Velocity Rings</div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-header">
+                    <span class="metric-title">UNDER REVIEW</span>
+                    <span class="metric-icon-badge warning">●</span>
+                </div>
+                <div class="metric-val val-warning" id="kpi-uncertain">--</div>
+                <div class="metric-meta">Outreach Verification Mandated</div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-header">
+                    <span class="metric-title">CLEARED</span>
+                    <span class="metric-icon-badge success">●</span>
+                </div>
+                <div class="metric-val val-success" id="kpi-legit">--</div>
+                <div class="metric-meta">False Positives Suppressed</div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-header">
+                    <span class="metric-title">SAR FILINGS</span>
+                </div>
+                <div class="metric-val val-amber" id="kpi-sar">--</div>
+                <div class="metric-meta">Form 111 Regulatory Drafts</div>
+            </div>
+
+            <div class="metric-tile highlight-emerald">
+                <div class="metric-header">
+                    <span class="metric-title">TOTAL EXPOSURE</span>
+                </div>
+                <div class="metric-val val-currency" id="kpi-exposure">$--</div>
+                <div class="metric-meta">Total Fraud Loss Mitigated</div>
+            </div>
+        </section>
+
+        <!-- 3. WORKSPACE CORE (3-PANEL SYSTEM) -->
+        <main class="workbench-core">
+
+            <!-- LEFT PANEL: CASE NAVIGATOR & TRIAGE STREAM -->
+            <aside class="panel-triage">
+                <div class="triage-header">
+                    <div class="triage-title-row">
+                        <span class="triage-title">CASE NAVIGATOR</span>
+                        <span class="triage-badge" id="filtered-case-count">20 ALERTS</span>
+                    </div>
+                    <!-- Search Input -->
+                    <div class="search-input-wrap">
+                        <svg class="search-svg" viewBox="0 0 20 20" width="14" height="14" fill="none">
+                            <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M13 13L17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <input type="text" id="case-search-input" placeholder="Search case, card, customer..." autocomplete="off">
+                    </div>
+
+                    <!-- Filter Chips -->
+                    <div class="triage-filter-pills">
+                        <button type="button" class="filter-chip active" data-filter="all">ALL (20)</button>
+                        <button type="button" class="filter-chip" data-filter="fraud">FRAUD</button>
+                        <button type="button" class="filter-chip" data-filter="uncertain">UNDER REVIEW</button>
+                        <button type="button" class="filter-chip" data-filter="legitimate">CLEARED</button>
+                    </div>
+                </div>
+
+                <!-- Case List Stream -->
+                <div class="case-list-stream" id="cases-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </aside>
+
+            <!-- CENTER PANEL: INVESTIGATION DOSSIER & WORKBENCH -->
+            <section class="panel-dossier">
+
+                <!-- Active Case Top Headline Banner -->
+                <div class="dossier-headline-strip">
+                    <div class="headline-primary-col">
+                        <div class="case-status-row">
+                            <span class="badge-verdict" id="view-status-tag">VERDICT: PENDING</span>
+                            <span class="badge-pattern" id="view-pattern-tag">PATTERN: NONE</span>
+                            <span class="badge-channel" id="view-channel-tag">ONLINE DISPUTE</span>
+                        </div>
+                        <h1 class="case-headline-title" id="view-case-id">Select an Alert</h1>
+                        <div class="case-entity-ribbon">
+                            <div class="ribbon-item">
+                                <span class="ribbon-k">CUSTOMER:</span>
+                                <span class="ribbon-v" id="view-cust-id">--</span>
+                            </div>
+                            <div class="ribbon-item">
+                                <span class="ribbon-k">CARD TOKEN:</span>
+                                <span class="ribbon-v" id="view-card-id">--</span>
+                            </div>
+                            <div class="ribbon-item">
+                                <span class="ribbon-k">FLAGGED TXN:</span>
+                                <span class="ribbon-v" id="view-txn-id">--</span>
+                            </div>
+                            <div class="ribbon-item">
+                                <span class="ribbon-k">TIMESTAMP:</span>
+                                <span class="ribbon-v" id="view-opened-date">--</span>
+                            </div>
+                        </div>
+                        <div class="case-trigger-prompt" id="view-trigger-desc"></div>
+                    </div>
+
+                    <!-- Risk Dial & Monetary HUD -->
+                    <div class="headline-meters-col">
+                        <div class="radial-gauge-card">
+                            <div class="radial-svg-wrap">
+                                <svg viewBox="0 0 100 100" width="80" height="80">
+                                    <circle cx="50" cy="50" r="40" class="gauge-bg" />
+                                    <circle cx="50" cy="50" r="40" class="gauge-bar" id="gauge-prob-bar" />
+                                </svg>
+                                <div class="gauge-center-text">
+                                    <span class="gauge-number" id="view-fraud-prob">--%</span>
+                                    <span class="gauge-sub">PROB</span>
+                                </div>
+                            </div>
+                            <div class="gauge-label">Calibrated Probability</div>
+                        </div>
+
+                        <div class="meter-stat-box">
+                            <div class="meter-stat-label">Model Score</div>
+                            <div class="meter-stat-val val-amber" id="view-model-score">--</div>
+                        </div>
+
+                        <div class="meter-stat-box">
+                            <div class="meter-stat-label">Exposure USD</div>
+                            <div class="meter-stat-val val-emerald" id="view-exposure">$--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs for Investigation Dossier -->
+                <div class="dossier-tab-nav">
+                    <button type="button" class="dossier-tab active" data-tab="tab-graph">
+                        Graph Topology
+                    </button>
+                    <button type="button" class="dossier-tab" data-tab="tab-timeline">
+                        Transaction Timeline
+                    </button>
+                    <button type="button" class="dossier-tab" data-tab="tab-evidence">
+                        Evidence & Context
+                    </button>
+                    <button type="button" class="dossier-tab" data-tab="tab-nba">
+                        Policy & Next-Best Action
+                    </button>
+                    <button type="button" class="dossier-tab" data-tab="tab-sar">
+                        FinCEN SAR Filing
+                    </button>
+                </div>
+
+                <!-- Tab Panes Container -->
+                <div class="dossier-tab-content">
+
+                    <!-- TAB 1: KNOWLEDGE SUBGRAPH & RING TOPOLOGY -->
+                    <div class="tab-pane active" id="tab-graph">
+                        <div class="graph-canvas-container">
+                            <!-- Floating Controls Toolbar -->
+                            <div class="canvas-controls-toolbar">
+                                <button type="button" class="btn-canvas-tool" id="btn-zoom-in" title="Zoom In">+</button>
+                                <button type="button" class="btn-canvas-tool" id="btn-zoom-out" title="Zoom Out">−</button>
+                                <button type="button" class="btn-canvas-tool" id="btn-reset-zoom" title="Fit to Viewport">Reset</button>
+                                <button type="button" class="btn-canvas-tool" id="btn-toggle-physics" title="Pause / Resume Physics">Pause</button>
+                            </div>
+
+                            <canvas id="graph-canvas"></canvas>
+
+                            <!-- Interactive Slide-over Node Inspector -->
+                            <div class="node-inspector-drawer" id="node-inspector">
+                                <div class="inspector-header">
+                                    <span class="inspector-badge" id="inspect-node-type">NODE INSPECTOR</span>
+                                    <button type="button" class="btn-close-inspector" id="btn-close-inspector">&times;</button>
+                                </div>
+                                <div class="inspector-title" id="inspect-node-title">Click a node to inspect</div>
+                                <div class="inspector-body" id="inspect-node-props">
+                                    <p class="inspector-placeholder">Click any Card, Customer, Device, or Transaction node on the canvas to inspect its TigerGraph properties and graph connectivity.</p>
+                                </div>
+                            </div>
+
+                            <!-- Canvas Floating Legend -->
+                            <div class="canvas-floating-legend">
+                                <div class="legend-chip"><span class="legend-dot dot-case"></span> Case Hub</div>
+                                <div class="legend-chip"><span class="legend-dot dot-cust"></span> Customer</div>
+                                <div class="legend-chip"><span class="legend-dot dot-card"></span> Card Token</div>
+                                <div class="legend-chip"><span class="legend-dot dot-txn"></span> Transaction</div>
+                                <div class="legend-chip"><span class="legend-dot dot-dev"></span> Device Profile</div>
+                                <div class="legend-chip"><span class="legend-dot dot-memory"></span> Case Memory</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: TRANSACTION VELOCITY TIMELINE -->
+                    <div class="tab-pane" id="tab-timeline">
+                        <div class="timeline-pane-header">
+                            <div>
+                                <h3 class="pane-title">Chronological Card Activity</h3>
+                                <p class="pane-desc">Audit trail of transactions on this card token derived from TigerGraph GSQL graph history.</p>
+                            </div>
+                            <div class="timeline-counter" id="timeline-count-badge">0 Transactions</div>
+                        </div>
+                        <div class="timeline-stream-container" id="timeline-stream">
+                            <div class="timeline-empty-state">Loading card history from TigerGraph engine...</div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: GRAPHRAG GROUNDING CLAIMS -->
+                    <div class="tab-pane" id="tab-evidence">
+                        <div class="pane-header-row">
+                            <div>
+                                <h3 class="pane-title">Synthesized Evidence Ledger</h3>
+                                <p class="pane-desc">Multi-signal convergence from GSQL graph queries and 5,565 historical case precedents.</p>
+                            </div>
+                            <span class="badge-counter" id="evidence-claims-count">0 Claims</span>
+                        </div>
+                        <div class="evidence-grid" id="evidence-ledger">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: NEXT-BEST ACTION & POLICY GATES -->
+                    <div class="tab-pane" id="tab-nba">
+                        <div class="pane-header-row">
+                            <div>
+                                <h3 class="pane-title">Policy Governance & Next-Best Action</h3>
+                                <p class="pane-desc">Compliance with Bank Fraud Policy v1.0 rules (R1–R10) and tiered approval routing.</p>
+                            </div>
+                            <span class="policy-version-badge">BANK FRAUD POLICY v1.0</span>
+                        </div>
+
+                        <div class="nba-comparison-deck">
+                            <div class="nba-card-stage pre">
+                                <div class="stage-header">
+                                    <span class="stage-num">STAGE 1</span>
+                                    <span class="stage-title">Initial Pre-Evidence Action</span>
+                                </div>
+                                <div class="stage-body" id="initial-actions-deck">
+                                    <!-- Rendered initial actions -->
+                                </div>
+                            </div>
+
+                            <div class="nba-transition-arrow">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+                                    <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>EVIDENCE UPDATE</span>
+                            </div>
+
+                            <div class="nba-card-stage post">
+                                <div class="stage-header">
+                                    <span class="stage-num">STAGE 2</span>
+                                    <span class="stage-title">Final Post-Evidence Action</span>
+                                </div>
+                                <div class="stage-body" id="final-actions-deck">
+                                    <!-- Rendered final actions -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Evolution Rationale -->
+                        <div class="policy-rationale-box">
+                            <div class="rationale-header">
+                                <span class="rationale-title">DECISION EVOLUTION & APPROVAL ROUTE AUDIT</span>
+                            </div>
+                            <div class="rationale-body" id="what-changed-text">
+                                Awaiting evaluation...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: FINCEN SAR REGULATORY FORM 111 -->
+                    <div class="tab-pane" id="tab-sar">
+                        <div class="sar-filing-wrapper">
+                            <div class="sar-header-ribbon">
+                                <div class="sar-seal-group">
+                                    <div>
+                                        <div class="sar-dept-title">DEPARTMENT OF THE TREASURY</div>
+                                        <div class="sar-sub-title">FINANCIAL CRIMES ENFORCEMENT NETWORK (FinCEN) — FORM 111</div>
+                                    </div>
+                                </div>
+                                <div class="sar-actions-group">
+                                    <button type="button" class="btn-sar-action" id="btn-copy-sar">Copy Narrative</button>
+                                    <button type="button" class="btn-sar-action" id="btn-download-sar">Export JSON</button>
+                                </div>
+                            </div>
+
+                            <div class="sar-document-body" id="sar-dossier-content">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- RIGHT PANEL: INTERACTIVE EVIDENCE SANDBOX & ACTION DISPATCHER -->
+            <aside class="panel-actions">
+                
+                <!-- 1. Evidence Verification Sandbox -->
+                <div class="side-module">
+                    <div class="side-module-header">
+                        <span class="side-module-title">CARDHOLDER VERIFICATION DISPATCH</span>
+                        <span class="badge-controlled">POLICY R1 GATE</span>
+                    </div>
+                    <p class="side-module-desc">
+                        Bank Fraud Policy v1.0 requires customer verification on uncertain alerts. Simulate cardholder response:
+                    </p>
+
+                    <div class="sandbox-dispatch-cards">
+                        <button type="button" class="sim-card sim-deny" id="btn-sim-deny">
+                            <div class="sim-card-top">
+                                <span class="sim-label">Cardholder Denies Charge</span>
+                            </div>
+                            <p class="sim-desc">Cardholder confirms unauthorized fraud and stolen card credentials.</p>
+                            <span class="sim-trigger-badge">Triggers R8.2: BLOCK_ALL_CARDS + SAR</span>
+                        </button>
+
+                        <button type="button" class="sim-card sim-confirm" id="btn-sim-confirm">
+                            <div class="sim-card-top">
+                                <span class="sim-label">Cardholder Confirms Legitimate</span>
+                            </div>
+                            <p class="sim-desc">Customer validates transaction and confirms out-of-region activity.</p>
+                            <span class="sim-trigger-badge">Triggers R2.1: CLOSE_CASE_FALSE_POSITIVE</span>
+                        </button>
+
+                        <button type="button" class="sim-card sim-timeout" id="btn-sim-timeout">
+                            <div class="sim-card-top">
+                                <span class="sim-label">24h SLA Timeout (No Response)</span>
+                            </div>
+                            <p class="sim-desc">No response received within 24 hours of notification delivery.</p>
+                            <span class="sim-trigger-badge">Triggers R4.2: DECLINE_TRANSACTION + MONITOR</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Officer Action Sign-off -->
+                <div class="side-module">
+                    <div class="side-module-header">
+                        <span class="side-module-title">OFFICER SIGN-OFF</span>
+                        <span class="badge-active-tier" id="active-officer-badge">AML OFFICER</span>
+                    </div>
+                    
+                    <div class="signoff-summary-box">
+                        <div class="signoff-item">
+                            <span class="signoff-k">REQUIRED APPROVAL:</span>
+                            <span class="signoff-v" id="signoff-route-badge">auto</span>
+                        </div>
+                        <div class="signoff-item">
+                            <span class="signoff-k">POLICY THRESHOLD:</span>
+                            <span class="signoff-v" id="signoff-threshold-text">&le; $2,500 Exposure</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-execute-action" id="btn-execute-signoff">
+                        <span>Sign-Off & Execute Recommendation</span>
+                    </button>
+                    <div class="signoff-feedback" id="signoff-feedback"></div>
+                </div>
+
+                <!-- 3. Real-Time Autonomous Audit Trail -->
+                <div class="side-module flex-grow">
+                    <div class="side-module-header">
+                        <span class="side-module-title">DECISION AUDIT LOG</span>
+                        <span class="audit-pulse">● LIVE</span>
+                    </div>
+                    <div class="audit-stream" id="audit-stream">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+            </aside>
+
+        </main>
+
+        <!-- 4. FOOTER ATTRIBUTION -->
+        <footer class="ops-footer">
+            <div class="footer-left">
+                <span class="footer-tag">HACKER HOUSE GOA 2026</span>
+                <span class="footer-sep">·</span>
+                <span>TRACK 4: AGENTIC FRAUD INVESTIGATION</span>
+            </div>
+            <div class="footer-right">
+                <span>POWERED BY TIGERGRAPH · GSQL GRAPHRAG · MODEL CONTEXT PROTOCOL (MCP)</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
