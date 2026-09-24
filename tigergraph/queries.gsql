@@ -1,0 +1,117 @@
+// ==============================================================================
+// TigerGraph GSQL Query Definitions
+// Hackathon: TigerGraph Agentic Fraud Investigation (HHGOA 2026)
+// ==============================================================================
+
+USE GRAPH FraudGraph
+
+// 1. Traverse card transactions in time window
+CREATE OR REPLACE QUERY get_card_transactions(VERTEX<Card> target_card, INT limit_count) FOR GRAPH FraudGraph {
+    ListAccum<VERTEX<Transaction>> @txns;
+    Start = {target_card};
+    
+    Txns = SELECT t FROM Start:s -(MADE:e)-> Transaction:t
+           ACCUM s.@txns += t
+           ORDER BY t.ts DESC
+           LIMIT limit_count;
+           
+    PRINT Txns;
+}
+
+// 2. Find device sharing neighbors (Multi-hop ring discovery)
+CREATE OR REPLACE QUERY get_device_neighbors(VERTEX<DeviceProfile> target_device) FOR GRAPH FraudGraph {
+    SetAccum<VERTEX<Transaction>> @@txns;
+    SetAccum<VERTEX<Card>> @@cards;
+    SetAccum<VERTEX<Customer>> @@customers;
+    
+    Start = {target_device};
+    
+    // Hop 1: Device -> Transactions
+    Txns = SELECT t FROM Start:d -(<FROM_DEVICE:e)- Transaction:t
+           ACCUM @@txns += t;
+           
+    // Hop 2: Transactions -> Cards
+    Cards = SELECT c FROM Txns:t -(<MADE:e)- Card:c
+            ACCUM @@cards += c;
+            
+    // Hop 3: Cards -> Customers
+    Custs = SELECT cu FROM Cards:c -(<OWNS:e)- Customer:cu
+            ACCUM @@customers += cu;
+            
+    PRINT @@cards, @@customers, @@txns;
+}
+
+// 3. Card testing pattern detector: Rapid sub-$5 online auths
+CREATE OR REPLACE QUERY detect_card_testing(VERTEX<Card> target_card, INT window_seconds) FOR GRAPH FraudGraph {
+    SumAccum<INT> @@small_count = 0;
+    MaxAccum<DOUBLE> @@max_amount = 0.0;
+    ListAccum<VERTEX<Transaction>> @@flagged_txns;
+    
+    Start = {target_card};
+    
+    Txns = SELECT t FROM Start:c -(MADE:e)-> Transaction:t
+           WHERE t.channel == "online"
+           ACCUM 
+               CASE WHEN t.amount <= 5.0 THEN
+                   @@small_count += 1,
+                   @@flagged_txns += t
+               ELSE
+                   @@max_amount += t.amount
+               END;
+               
+    PRINT @@small_count, @@max_amount, @@flagged_txns;
+}
+
+// 4. Billing Region Distribution (Home vs Out-of-region drift)
+CREATE OR REPLACE QUERY get_region_distribution(VERTEX<Card> target_card) FOR GRAPH FraudGraph {
+    MapAccum<STRING, INT> @@region_counts;
+    Start = {target_card};
+    
+    Txns = SELECT t FROM Start:c -(MADE:e)-> Transaction:t -(BILLED_IN:e2)-> BillingRegion:r
+           ACCUM @@region_counts += (r.region_code -> 1);
+           
+    PRINT @@region_counts;
+}
+
+// 5. Query Closed Case Memory
+CREATE OR REPLACE QUERY find_similar_cases(STRING target_pattern, STRING target_card_id) FOR GRAPH FraudGraph {
+    ListAccum<VERTEX<ClosedCase>> @@matched_cases;
+    
+    Start = {ClosedCase.*};
+    
+    Matched = SELECT c FROM Start:c
+              WHERE c.pattern == target_pattern OR c.card_id == target_card_id
+              LIMIT 10;
+              
+    PRINT Matched;
+}
+
+// 6. Persist Investigation Case to Graph
+CREATE OR REPLACE QUERY write_investigation_case(
+    STRING case_id, 
+    STRING opened_at, 
+    STRING status, 
+    STRING verdict, 
+    DOUBLE fraud_prob, 
+    STRING pattern, 
+    DOUBLE exposure, 
+    STRING stop_reason, 
+    STRING summary,
+    STRING card_id,
+    STRING txn_id
+) FOR GRAPH FraudGraph {
+    INSERT INTO InvestigationCase (
+        PRIMARY_ID, case_id, opened_at, status, verdict, 
+        fraud_probability, pattern, exposure_usd, stop_reason, summary
+    ) VALUES (
+        case_id, case_id, to_datetime(opened_at), status, verdict,
+        fraud_prob, pattern, exposure, stop_reason, summary
+    );
+    
+    INSERT INTO CASE_ON_CARD (FROM, TO) VALUES (case_id, card_id);
+    INSERT INTO CASE_INVOLVES (FROM, TO) VALUES (case_id, txn_id);
+    
+    PRINT "SUCCESS";
+}
+
+INSTALL QUERY ALL

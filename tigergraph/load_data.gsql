@@ -1,0 +1,47 @@
+// ==============================================================================
+// TigerGraph GSQL Data Loading Jobs
+// Hackathon: TigerGraph Agentic Fraud Investigation (HHGOA 2026)
+// ==============================================================================
+
+USE GRAPH FraudGraph
+
+CREATE LOADING JOB load_fraud_data FOR GRAPH FraudGraph {
+    DEFINE FILENAME txn_file;
+    DEFINE FILENAME id_file;
+    DEFINE FILENAME closed_file;
+
+    // Load Customers, Cards, Transactions from transactions.csv
+    LOAD txn_file TO VERTEX Customer VALUES ($"customer_id", $"customer_id", $"ts", _, _) USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO VERTEX Card VALUES ($"card_id", $"card_id", $"customer_id", $"card4", $"card6", $"card1", "active") USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO VERTEX Transaction VALUES (
+        $"TransactionID", $"TransactionID", $"card_id", $"customer_id", 
+        $"ts", $"TransactionAmt", $"ProductCD", $"channel", $"risk_score", 
+        $"addr1", $"addr2", $"P_emaildomain", $"R_emaildomain", $"dist1", $"dist2"
+    ) USING HEADER="true", SEPARATOR=",";
+
+    LOAD txn_file TO VERTEX BillingRegion VALUES ($"addr1", $"addr1", $"addr2") WHERE $"addr1" IS NOT EMPTY USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO VERTEX EmailDomain VALUES ($"P_emaildomain", $"P_emaildomain") WHERE $"P_emaildomain" IS NOT EMPTY USING HEADER="true", SEPARATOR=",";
+
+    // Edges
+    LOAD txn_file TO EDGE OWNS VALUES ($"customer_id", $"card_id") USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO EDGE MADE VALUES ($"card_id", $"TransactionID") USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO EDGE BILLED_IN VALUES ($"TransactionID", $"addr1") WHERE $"addr1" IS NOT EMPTY USING HEADER="true", SEPARATOR=",";
+    LOAD txn_file TO EDGE PURCHASER_EMAIL VALUES ($"TransactionID", $"P_emaildomain") WHERE $"P_emaildomain" IS NOT EMPTY USING HEADER="true", SEPARATOR=",";
+
+    // Load DeviceProfiles from identity.csv
+    LOAD id_file TO VERTEX DeviceProfile VALUES (
+        $"TransactionID", $"TransactionID", $"DeviceInfo", $"DeviceType", 
+        $"id_30", $"id_31", $"id_33", ($"id_15" == "New"), $"id_23"
+    ) USING HEADER="true", SEPARATOR=",";
+
+    LOAD id_file TO EDGE FROM_DEVICE VALUES ($"TransactionID", $"TransactionID") USING HEADER="true", SEPARATOR=",";
+
+    // Load Closed Cases
+    LOAD closed_file TO VERTEX ClosedCase VALUES (
+        $"case_id", $"case_id", $"customer_id", $"card_id", 
+        $"opened_at", $"closed_at", $"outcome", $"pattern", 
+        $"exposure_usd", $"actions_taken", $"report_filed", $"analyst_notes"
+    ) USING HEADER="true", SEPARATOR=",";
+
+    LOAD closed_file TO EDGE ON_CARD VALUES ($"case_id", $"card_id") USING HEADER="true", SEPARATOR=",";
+}

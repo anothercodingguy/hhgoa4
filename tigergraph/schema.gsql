@@ -1,0 +1,119 @@
+// ==============================================================================
+// TigerGraph GSQL Schema Definition
+// Hackathon: TigerGraph Agentic Fraud Investigation (HHGOA 2026)
+// ==============================================================================
+
+CREATE GRAPH FraudGraph()
+
+USE GRAPH FraudGraph
+
+// ------------------------------------------------------------------------------
+// Vertex Definitions
+// ------------------------------------------------------------------------------
+
+CREATE VERTEX Customer(
+    PRIMARY_ID id STRING,
+    customer_id STRING,
+    created_at STRING,
+    total_cards INT,
+    risk_level STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX Card(
+    PRIMARY_ID id STRING,
+    card_id STRING,
+    customer_id STRING,
+    card_network STRING,
+    card_type STRING,
+    issuer_code STRING,
+    status STRING DEFAULT "active"
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX Transaction(
+    PRIMARY_ID id STRING,
+    txn_id STRING,
+    card_id STRING,
+    customer_id STRING,
+    ts DATETIME,
+    amount DOUBLE,
+    product_cd STRING,
+    channel STRING,
+    risk_score DOUBLE,
+    addr1 STRING,
+    addr2 STRING,
+    purchaser_email STRING,
+    recipient_email STRING,
+    dist1 DOUBLE,
+    dist2 DOUBLE
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX DeviceProfile(
+    PRIMARY_ID id STRING,
+    device_id STRING,
+    device_info STRING,
+    device_type STRING,
+    os STRING,
+    browser STRING,
+    screen STRING,
+    is_new BOOL,
+    proxy_flag STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX EmailDomain(
+    PRIMARY_ID id STRING,
+    domain STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX BillingRegion(
+    PRIMARY_ID id STRING,
+    region_code STRING,
+    country_code STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX ClosedCase(
+    PRIMARY_ID id STRING,
+    case_id STRING,
+    customer_id STRING,
+    card_id STRING,
+    opened_at DATETIME,
+    closed_at DATETIME,
+    outcome STRING,
+    pattern STRING,
+    exposure_usd DOUBLE,
+    actions_taken STRING,
+    report_filed STRING,
+    analyst_notes STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+CREATE VERTEX InvestigationCase(
+    PRIMARY_ID id STRING,
+    case_id STRING,
+    opened_at DATETIME,
+    status STRING,
+    verdict STRING,
+    fraud_probability DOUBLE,
+    pattern STRING,
+    exposure_usd DOUBLE,
+    stop_reason STRING,
+    summary STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+// ------------------------------------------------------------------------------
+// Edge Definitions
+// ------------------------------------------------------------------------------
+
+CREATE DIRECTED EDGE OWNS(FROM Customer, TO Card);
+CREATE DIRECTED EDGE MADE(FROM Card, TO Transaction);
+CREATE DIRECTED EDGE FROM_DEVICE(FROM Transaction, TO DeviceProfile);
+CREATE DIRECTED EDGE PURCHASER_EMAIL(FROM Transaction, TO EmailDomain);
+CREATE DIRECTED EDGE BILLED_IN(FROM Transaction, TO BillingRegion);
+CREATE DIRECTED EDGE NEXT_TXN(FROM Transaction, TO Transaction);
+
+CREATE UNDIRECTED EDGE INVOLVES(FROM ClosedCase, TO Transaction);
+CREATE UNDIRECTED EDGE ON_CARD(FROM ClosedCase, TO Card);
+CREATE UNDIRECTED EDGE CONNECTED_TO(FROM ClosedCase, TO Card);
+
+CREATE UNDIRECTED EDGE CASE_INVOLVES(FROM InvestigationCase, TO Transaction);
+CREATE UNDIRECTED EDGE CASE_ON_CARD(FROM InvestigationCase, TO Card);
+CREATE UNDIRECTED EDGE CASE_CONNECTED_CARD(FROM InvestigationCase, TO Card);
+CREATE UNDIRECTED EDGE CASE_CONNECTED_DEVICE(FROM InvestigationCase, TO DeviceProfile);
